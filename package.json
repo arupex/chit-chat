@@ -1,0 +1,10 @@
+{
+  "name": "har-time-player",
+  "version": "0.0.1",
+  "bin" : {
+    "har-time-player" : "server.js"
+  },
+  "dependencies": {
+    
+  }
+}
