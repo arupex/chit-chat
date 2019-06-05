@@ -3,56 +3,19 @@
 process.on('uncaughtException', ({message, stack}) => console.error(message, stack));
 
 const http = require('http');
-const fs = require('fs');
-const originalHar = JSON.parse(fs.readFileSync(`${process.argv[2]}`, 'utf8')).log.entries;
 
-const har = JSON.parse(JSON.stringify(originalHar));
+const ARGS = process.argv.filter(e => e.indexOf('=') !== -1).reduce((acc, value) => {let kv = value.split('=');acc[kv[0].replace(/^-*/g, '')] = kv[1];return acc;}, {});
 
-const app = http.createServer((req, res) => {
-    try {
+const HarPlayer = require('./harplayer');
 
-        let findRequest = (entity) => entity.request.url.endsWith(req.url) && req.method === entity.request.method;
+const harplayer = new HarPlayer(ARGS.har);
 
-        let harEntityIndex = har.findIndex(findRequest);
-        let harEntity;
+if(ARGS.verbose) {
+    const domains = harplayer.domains();
+    console.log('\n\tdomains:\n', domains.map(e => `\t\t${e}`).join('\n'), '\n');
+}
 
-        if(harEntityIndex < 0) {
-            let reverseOriginal = JSON.parse(JSON.stringify(originalHar)).reverse();
+const httpApp = http.createServer(harplayer.middleware({ delay : ARGS.delay, cors : ARGS.cors, httpsRewrite: ARGS.httpsRewrite, verbose : ARGS.verbose }));
 
-            harEntityIndex = reverseOriginal.findIndex(findRequest);
-
-            if (harEntityIndex < 0) {
-                res.statusCode = 404;
-                let msg = 'sorry this har file does not contain the request requested';
-                console.log('req', req.method.padEnd(8, ' '), req.url, msg);
-                return res.end(msg);
-            }
-            else {
-                harEntity = reverseOriginal.splice(harEntityIndex, 1)[0];
-            }
-        }
-        else {
-            harEntity = har.splice(harEntityIndex, 1)[0];
-        }
-
-        console.log('req', req.method.padEnd(8, ' '), req.url);
-
-        res.statusCode = harEntity.response.status;
-        harEntity.response.headers.forEach(({name, value}) => res.setHeader(name, value));
-        res.setHeader('Date', (new Date()).toUTCString());
-
-        setTimeout(() => {
-            res.end(harEntity.response.content.text);
-        }, req.method !== 'OPTIONS' ? (parseInt(process.argv[4]) || 10) : 10);
-
-    }
-    catch(e) {
-        console.error('Error!', e.message, e.stack);
-    }
-});
-
-let port = process.argv[3];
-console.log(`listening on port ${port}`);
-app.listen(port);
-
-
+console.log(`listening on port ${ARGS.port}`);
+httpApp.listen(ARGS.port);

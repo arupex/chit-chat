@@ -1,13 +1,11 @@
 {
   "name": "har-time-player",
-  "version": "0.0.2",
-  "bin" : {
-    "har-time-player" : "server.js"
+  "version": "0.0.3",
+  "bin": {
+    "har-time-player": "server.js"
   },
   "scripts": {
-    "start" : "npm i -g"
+    "start": "npm i -g"
   },
-  "dependencies": {
-    
-  }
+  "dependencies": {}
 }
