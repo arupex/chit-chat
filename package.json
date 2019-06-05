@@ -4,6 +4,9 @@
   "bin" : {
     "har-time-player" : "server.js"
   },
+  "scripts": {
+    "start" : "npm i -g"
+  },
   "dependencies": {
     
   }
