@@ -24,14 +24,14 @@ if(!ARGS.https) {
 }
 else {
     const https = require('https');
-    const pem = require('pem')
+    const pem = require('pem');
 
     pem.createCertificate({ days: 2, selfSigned: true }, function (err, keys) {
         if (err) {
             throw err
         }
         const httpsApp = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, harplayer.middleware({ delay : ARGS.delay, cors : ARGS.cors, httpsRewrite: false, verbose : ARGS.verbose }));
-
-        httpsApp.listen(443)
+        console.log(`listening on port ${ARGS.port}`);
+        httpsApp.listen(ARGS.port)
     })
 }

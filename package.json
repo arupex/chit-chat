@@ -1,6 +1,6 @@
 {
   "name": "har-time-player",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "bin": {
     "har-time-player": "server.js"
   },
