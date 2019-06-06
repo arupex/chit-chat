@@ -17,5 +17,21 @@ if(ARGS.verbose) {
 
 const httpApp = http.createServer(harplayer.middleware({ delay : ARGS.delay, cors : ARGS.cors, httpsRewrite: ARGS.httpsRewrite, verbose : ARGS.verbose }));
 
-console.log(`listening on port ${ARGS.port}`);
-httpApp.listen(ARGS.port);
+if(!ARGS.https) {
+    console.log(`listening on port ${ARGS.port}`);
+    httpApp.listen(ARGS.port);
+
+}
+else {
+    const https = require('https');
+    const pem = require('pem')
+
+    pem.createCertificate({ days: 2, selfSigned: true }, function (err, keys) {
+        if (err) {
+            throw err
+        }
+        const httpsApp = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, harplayer.middleware({ delay : ARGS.delay, cors : ARGS.cors, httpsRewrite: false, verbose : ARGS.verbose }));
+
+        httpsApp.listen(443)
+    })
+}
