@@ -18,7 +18,7 @@ if(ARGS.verbose) {
 const httpApp = http.createServer(harplayer.middleware({ delay : ARGS.delay, cors : ARGS.cors, httpsRewrite: ARGS.httpsRewrite, verbose : ARGS.verbose }));
 
 if(!ARGS.https) {
-    console.log(`listening on port ${ARGS.port}`);
+    console.log(`har-time-player is http listening on port ${ARGS.port}`);
     httpApp.listen(ARGS.port);
 
 }
@@ -31,7 +31,7 @@ else {
             throw err
         }
         const httpsApp = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, harplayer.middleware({ delay : ARGS.delay, cors : ARGS.cors, httpsRewrite: false, verbose : ARGS.verbose }));
-        console.log(`listening on port ${ARGS.port}`);
+        console.log(`har-time-player is https listening on port ${ARGS.port}`);
         httpsApp.listen(ARGS.port)
     })
 }
